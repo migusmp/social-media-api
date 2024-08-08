@@ -30,6 +30,10 @@ const UserSchema = new Schema({
         type: String,
         required: false
     },
+    password: {
+        type: String,
+        required: true
+    },
     following: [ { type: Types.ObjectId, ref: "User" }],
     followers: [ { type: Types.ObjectId, ref: "User" }],
     image: {
