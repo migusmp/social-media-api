@@ -61,6 +61,13 @@ class UserController {
             const token = await UserService.generateToken(userExist as UserPayload);
             if (!token) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Ups ha ocurrido un error al intentar iniciar sesión :(");
 
+            // Ponemos en la cookie el token que contiene la información del usuario logueado
+            res.cookie('auth', token, {
+                httpOnly: true, // Esta cookie solo será accesible por el servidor
+                sameSite: 'strict', // Limita el envío de la cookie en solicitudes de terceros
+                maxAge: 24 * 60 * 60 * 1000 // La cookie expira en 1 día
+            });
+
             return successResponse(res, HttpStatusCodes.OK, "Usuario logueado correctamente!", token);
         } catch(e) {
             console.error(e);

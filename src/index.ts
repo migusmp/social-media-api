@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 // Importamos la función encargada de conectarnos con la BBDD MongoDB
 import connection from './db/connection';
@@ -15,6 +16,7 @@ const app = express() // Inicializamos la app
 app.use(cors());
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 app.use("/api", MainRouter);
 

@@ -13,12 +13,12 @@ export interface Request extends ExpressRequest {
 
 const auth = async (req: Request, res: Response, next: NextFunction ): Promise<object | void> => {
     if (!key) return;
-    if (!req.cookies.auth) {
+    if (!req.headers.authorization) {
         return errorResponse(res, HttpStatusCodes.UNAUTHORIZED, "Debes introducir la cabecera de autenticación");
     }
     try {
         // Limpiar el token
-        let token = req.cookies.auth.replace(/['"']+/g, '');
+        let token = req.headers.authorization.replace(/['"']+/g, '');
 
         // Verificamos que el token es válido
         let payload:PayloadComplete = await jwt.decode(token, key);
@@ -27,6 +27,7 @@ const auth = async (req: Request, res: Response, next: NextFunction ): Promise<o
         }
 
         req.user = payload;
+
 
     } catch(e) {
         console.error(e);
