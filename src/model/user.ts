@@ -1,15 +1,16 @@
 import mongoose, { Schema, Types, model } from "mongoose";
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts";
 
-type User = mongoose.Document & {
+export type User = mongoose.Document & {
     name: String,
     nick: String,
     email: String,
     description?: String,
+    password: string,
     following: [ mongoose.Types.ObjectId ],
     followers: [ mongoose.Types.ObjectId ],
-    image?: String,
-    created_at: String
+    image: String,
+    created_at: Date
 }
 
 const UserSchema = new Schema({

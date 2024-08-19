@@ -1,5 +1,7 @@
 import { User } from "../model/user";
-import { ErrorsRegister, RegisterInfo } from "../utils/types";
+import bcrypt from 'bcrypt';
+import { ErrorsRegister, RegisterInfo, UserPayload } from "../utils/types";
+import { createToken } from "../utils/jwt";
 
 class UserService {
     public async verifyRegisterData(name: string, nick: string, email: string, password: string) {
@@ -20,7 +22,7 @@ class UserService {
         return errors;
     }
 
-    public async checkIfUserExist(nick: string, email: string) {
+    public async checkIfUserExist(nick: string, email?: string) {
         try {
             const checkDuplicated = await User.findOne({
                 $or: [
@@ -28,12 +30,30 @@ class UserService {
                     { email: email }
                 ]
             })
-            if (checkDuplicated) return true;
+            if (checkDuplicated) return checkDuplicated;
             return false;
         } catch(e) {
             console.error(e);
             return false;
         }
+    }
+
+    public async findUserByNick(nick: string) {
+        try {
+            const user = await User.findOne({ nick });
+            if (!user) {
+                return false;
+            }
+            return user;
+        } catch(e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    public async hashPassword(password: string) {
+        const hashedPwd = await bcrypt.hash(password, 10);
+        return hashedPwd;
     }
 
     public async saveUser(userInfo: RegisterInfo) {
@@ -45,6 +65,18 @@ class UserService {
             console.error(e);
             return false;
         }
+    }
+
+    public async verifyPassword(pwd: string, userDbPassword: string) {
+        const checkPwd = bcrypt.compareSync(pwd, userDbPassword);
+        if (checkPwd) {
+            return true
+        }
+        return false;
+    }
+
+    public async generateToken(user: UserPayload) {
+        return await createToken(user)
     }
 }
 
