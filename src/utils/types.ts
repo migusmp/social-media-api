@@ -30,7 +30,7 @@ export type UserPayload = {
     nick: String;
     email: String;
     password: String;
-    description?: String | undefined;
+    description: String;
     followers: Types.ObjectId[];
     following: Types.ObjectId[];
     image: String;

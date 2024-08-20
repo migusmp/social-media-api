@@ -13,6 +13,7 @@ export const createToken = async (info: UserPayload) => {
         name: info.name.toString(),
         nick: info.nick.toString(),
         email: info.email.toString(),
+        description: info.description.toString(),
         password: info.password.toString(),
         followers: info.followers.map(id => id.toString()),
         following: info.following.map(id => id.toString()),

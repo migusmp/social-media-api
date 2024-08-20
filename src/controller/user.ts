@@ -3,7 +3,8 @@ import { errorResponse, successResponse } from "../utils/responses";
 import { HttpStatusCodes } from "../utils/httpStatusCodes";
 import UserService from "../services/UserService";
 import { RegisterInfo, UserPayload } from "../utils/types";
-import { PayloadComplete } from "../interfaces/interfaces";
+import { PayloadComplete, UpdateData } from "../interfaces/interfaces";
+import fs from 'node:fs';
 
 interface Request extends ExpressRequest {
     user?: PayloadComplete
@@ -77,7 +78,90 @@ class UserController {
 
     static async update(req: Request, res: Response) {
         const user = req.user;
-        return successResponse(res, HttpStatusCodes.OK, "Acción de actualizar usuario", user);
+        if (!user) return;
+
+        const info: UpdateData = req.body;
+
+        if (!info.description && !info.name && !info.nick && !info.password) {
+            return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "No data to update profile");
+        }
+
+        try {
+            // Comprobamos que si quiere actualizar el nick, este no lo tenga ya asignado un usuario.
+            if (info.nick) {
+                const checkNewNick = await UserService.findUserByNick(info.nick);
+        
+                if (checkNewNick != false) {
+                    return errorResponse(res, HttpStatusCodes.OK, "this nick is already used");
+                }
+            }
+
+            if (info.password) {
+                const newPassword = await UserService.hashPassword(info.password);
+                if (!newPassword) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al realizar la operación");
+                info.password = newPassword;
+            }
+
+            const update = await UserService.updateUser(user?.id, info);
+            if (!update) {
+                return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar la información del usuario");
+            }
+            
+            return successResponse(res, HttpStatusCodes.OK, "User updated!");
+
+        } catch(e) {
+            console.error(e);
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar el usuario, INTERNAL SERVER ERROR");
+        }
+    }
+
+    static async upload(req: Request, res: Response): Promise<object | void> {
+        const user = req.user;
+        if (!user) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "user identity err");
+        if (!req.file) {
+            return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "You need introduce an image");
+        }
+        // Obtenemos la extensión del archivo subido por el cliente
+        let image = req.file.originalname;
+        let imageSplit = image.split("\.");
+        let imageExtension = imageSplit[1];
+
+        if (imageExtension !== "jpeg" && imageExtension !== "jpg" && imageExtension !== "png" && imageExtension !== "gif") {
+            // Eliminamos la imágen
+            let imagePath = req.file.path;
+            fs.unlinkSync(imagePath);
+
+            return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Invalid image format");
+        }
+
+        let userImageUpdate = await UserService.updateUserImage(user.id, req.file.filename); // Actualizamos la imagen en la BBDD
+
+        if (!userImageUpdate) {
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar la imagen de perfil");
+        }
+
+        return successResponse(res, HttpStatusCodes.OK, "Image", userImageUpdate);
+    }
+
+    static async usersList(req: Request, res: Response): Promise<object> {
+        // Página que se mostrará por defecto
+        let page: number = 1;
+
+        if (req.params.page) {
+            page = parseInt(req.params.page);
+        }
+        try {
+            const options = {
+                page,
+                limit: 2,
+                select: "nick name _id"
+            }
+            const users = await UserService.usersList(options); // Listamos los usuarios
+            return successResponse(res, HttpStatusCodes.OK, "App users list:", users);
+        } catch(e) {
+            console.error(e);
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los usuarios de la App, INTERNAL SERVER ERROR");
+        }
     }
 }
 

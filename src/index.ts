@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import path from 'node:path';
 
 // Importamos la función encargada de conectarnos con la BBDD MongoDB
 import connection from './db/connection';
@@ -18,7 +19,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
+// Endpoints de la API
 app.use("/api", MainRouter);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
 
 const PORT = process.env.PORT || 8080;
 

@@ -2,6 +2,7 @@ import { User } from "../model/user";
 import bcrypt from 'bcrypt';
 import { ErrorsRegister, RegisterInfo, UserPayload } from "../utils/types";
 import { createToken } from "../utils/jwt";
+import { UpdateData } from "../interfaces/interfaces";
 
 class UserService {
     public async verifyRegisterData(name: string, nick: string, email: string, password: string) {
@@ -77,6 +78,34 @@ class UserService {
 
     public async generateToken(user: UserPayload) {
         return await createToken(user)
+    }
+
+    public async updateUser(userId: string ,info: UpdateData) {
+        try {
+            const dataUpdated = await User.findByIdAndUpdate(userId, info);
+            if (!dataUpdated) {
+                return false;
+            }
+            return dataUpdated;
+        } catch(e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    public async updateUserImage(userId: string, image: string) {
+        try {
+            const updateImg = await User.findByIdAndUpdate(userId, { image: image }, { new: true }).select("nick image -_id");
+            return updateImg;
+        } catch(e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    public async usersList(options: object) {
+        const users = await User.paginate(options);
+        return users;
     }
 }
 
