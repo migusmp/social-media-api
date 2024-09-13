@@ -23,5 +23,5 @@ export const createToken = async (info: UserPayload) => {
         exp: moment().add(30, "days").unix()
     }
 
-    return jwt.encode(payload, secret)
+    return jwt.encode(payload, secret, 'HS256')
 }

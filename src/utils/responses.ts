@@ -3,11 +3,12 @@ import { ErrorsRegister } from "./types"
 
 // Funciones para enviar respuestas a los clientes
 
-export const successResponse = async (res: Response, statusCode: number, msg: string, data?: object | string) => {
+export const successResponse = async (res: Response, statusCode: number, msg: string, data?: object | string, length?: object | string | number) => {
     return res.status(statusCode).send({
         status: "success",
         message: msg,
-        data
+        data,
+        length
     })
 }
 

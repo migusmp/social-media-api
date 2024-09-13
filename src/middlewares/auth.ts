@@ -21,7 +21,7 @@ const auth = async (req: Request, res: Response, next: NextFunction ): Promise<o
         let token = req.cookies.auth.replace(/['"']+/g, '');
 
         // Verificamos que el token es válido
-        let payload:PayloadComplete = await jwt.decode(token, key);
+        let payload:PayloadComplete = await jwt.decode(token, key, false, "HS256");
         if (payload.exp <= moment().unix()) {
             return errorResponse(res, HttpStatusCodes.UNAUTHORIZED, "invalid token");
         }
