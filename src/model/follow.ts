@@ -19,7 +19,7 @@ const FollowSchema = new Schema({
         required: true
     },
     created_at: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Date,
         default: Date.now()
     }
 })

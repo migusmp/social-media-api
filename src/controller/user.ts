@@ -6,6 +6,7 @@ import { RegisterInfo, UserPayload } from "../utils/types";
 import { PayloadComplete, UpdateData } from "../interfaces/interfaces";
 import fs from 'node:fs';
 import FollowService from "../services/FollowService";
+//import FollowService from "../services/FollowService";
 
 interface Request extends ExpressRequest {
     user?: PayloadComplete
@@ -164,7 +165,7 @@ class UserController {
             return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los usuarios de la App, INTERNAL SERVER ERROR");
         }
     }
-
+    /*
     static async follows(req: Request, res: Response) {
         const { id } = req.params;
         if (!id) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Debes de introducir el id del usuario para saber a quien sigue!");
@@ -199,6 +200,24 @@ class UserController {
             console.error(e);
             return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los follows del usuario!, INTERNAL SERVER ERROR");
         }
+    } */
+
+    static async follows(req: Request, res: Response) {
+        const { id } = req.params;
+        if (!id) {
+            return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Debes de introducir el id del usuario del que quieres obtener los follows");
+        }
+        try {
+            const follows = await FollowService.getUserFollows(id);
+            if (!follows) {
+                return errorResponse(res, HttpStatusCodes.OK, "El usuario no sigue a nadie");
+            }
+            return successResponse(res, HttpStatusCodes.OK, "Follows: ", follows);
+        } catch(e) {
+            console.error(e);
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, `Error al obtener los follows del usuario con el id ${id}, INTERNAL SERVER ERROR :(`);
+        }
+        
     }
 }
 
