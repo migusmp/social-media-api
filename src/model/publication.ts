@@ -1,7 +1,7 @@
 import mongoose, { model, Schema } from "mongoose";
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts";
 
-export type Publication = mongoose.Document & {
+export type Post = mongoose.Document & {
     user:  string;
     text: string;
     image: string;
@@ -10,7 +10,7 @@ export type Publication = mongoose.Document & {
     created_at: Date
 }
 
-const PublicationSchema = new Schema({
+const PostSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
@@ -39,5 +39,5 @@ const PublicationSchema = new Schema({
     }
 })
 
-PublicationSchema.plugin(mongoosePagination);
-export const Publication: Pagination<Publication> = model<Publication, Pagination<Publication>>('Publication', PublicationSchema);
+PostSchema.plugin(mongoosePagination);
+export const Publication: Pagination<Post> = model<Post, Pagination<Post>>('Publication', PostSchema);
