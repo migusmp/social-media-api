@@ -1,4 +1,4 @@
-import mongoose, { Schema, Types, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts";
 
 export type User = mongoose.Document & {
@@ -36,8 +36,6 @@ const UserSchema = new Schema({
         type: String,
         required: true
     },
-    following: [ { type: Types.ObjectId, ref: "User" }],
-    followers: [ { type: Types.ObjectId, ref: "User" }],
     image: {
         type: String,
         default: "default.jpg"
