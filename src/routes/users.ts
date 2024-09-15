@@ -21,6 +21,7 @@ router.post('/login', UserController.login);
 router.put('/update', check.auth, UserController.update);
 router.post('/upload', [ check.auth, upload.single("file0") ], UserController.upload);
 router.get('/list/:page?', UserController.usersList);
-router.get('/follows/:id', check.auth, UserController.follows);
+router.get('/follows/:id/:page?', check.auth, UserController.follows);
+router.get('/followers/:id/:page?', check.auth, UserController.followers);
 
 export default router;

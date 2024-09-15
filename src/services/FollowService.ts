@@ -1,3 +1,4 @@
+import { PaginationOptions } from "mongoose-paginate-ts";
 import { Follow } from "../model/follow";
 /*
 type PaginateOptions = {
@@ -52,24 +53,21 @@ class FollowService {
             return false;
         }
     }
-    /*
-    public async getUserFollows(userId: string, options: object) {
+    
+    public async getUserFollows(options: PaginationOptions) {
         try {
-            const userFollows = await Follow.paginate({}, options);
+            const userFollows = await Follow.paginate(options);
             return userFollows;
         } catch(e) {
             console.error(e);
             return false;
         }
-    } */
+    } 
 
-    public async getUserFollows(userId: string) {
+    public async getUserFollowers(options: PaginationOptions) {
         try {
-            const userFollow = await Follow.find({ user: userId });
-            if (!userFollow) {
-                return false;
-            }
-            return userFollow;
+            const followers = await Follow.paginate(options);
+            return followers;
         } catch(e) {
             console.error(e);
             return false;
