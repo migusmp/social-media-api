@@ -11,8 +11,6 @@ export interface PayloadComplete {
     email: string;
     description: string;
     password: string;
-    followers: string[];
-    following: string[];
     image: string;
     created_at: Date;
     iat: number,

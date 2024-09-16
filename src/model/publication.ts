@@ -40,4 +40,4 @@ const PostSchema = new Schema({
 })
 
 PostSchema.plugin(mongoosePagination);
-export const Publication: Pagination<Post> = model<Post, Pagination<Post>>('Publication', PostSchema);
+export const Post: Pagination<Post> = model<Post, Pagination<Post>>('Publication', PostSchema);

@@ -15,8 +15,6 @@ export const createToken = async (info: UserPayload) => {
         email: info.email.toString(),
         description: info.description.toString(),
         password: info.password.toString(),
-        followers: info.followers.map(id => id.toString()),
-        following: info.following.map(id => id.toString()),
         image: info.image.toString(),
         created_at: info.created_at,
         iat: moment().unix(),
