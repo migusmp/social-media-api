@@ -39,6 +39,19 @@ class PostService {
             return false;
         }
     }
+
+    public async updatePost(postId: string, text: string) {
+        try {
+            const updatePost = await Post.findByIdAndUpdate(postId, { text }, { new: true });
+            if (!updatePost) {
+                return false;
+            }
+            return updatePost;
+        } catch(e) {
+            console.error(e);
+            return false;
+        }
+    }
 }
 
 export default new PostService;

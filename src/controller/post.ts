@@ -78,7 +78,10 @@ class PostController {
             }
 
             // Actualizamos la publicación
-            
+            const updatePost = await PostService.updatePost(postId, text);
+            if (updatePost == false) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar la publicación");
+
+            return successResponse(res, HttpStatusCodes.OK, "Publicación actualizada correctamente: ", updatePost);
         } catch(e) {
             console.error(e);
             return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar la información de la publicación");
