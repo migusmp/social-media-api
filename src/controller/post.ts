@@ -66,13 +66,19 @@ class PostController {
 
     static async update(req: Request, res: Response) {
         const userIdentity = req.user;
-        const { postId } = req.body;
+        const { postId, text } = req.body;
         if (!postId || !userIdentity) {
             return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Debes de introducir el identificador de la publicación");
         }
         try {
             // Verificar que el usuario que el usuario que quiere eliminar la publicación es el que la ha subido
             const verifyUser = await PostService.verifyPostUser(userIdentity.id, postId);
+            if (verifyUser != true) {
+                return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "El post no existe");
+            }
+
+            // Actualizamos la publicación
+            
         } catch(e) {
             console.error(e);
             return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar la información de la publicación");
