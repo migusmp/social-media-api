@@ -5,4 +5,4 @@ node_modules/
 .env
 
 # Uploaded user files
-src/uploads/user/
+src/uploads/users/
