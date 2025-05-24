@@ -1,12 +1,5 @@
 import { PaginationOptions } from "mongoose-paginate-ts";
 import { Follow } from "../model/follow";
-/*
-type PaginateOptions = {
-    page: number,
-    limit: number,
-    select: string,
-    populate: object
-} */
 
 class FollowService {
     public async follow(user: string, userFollowed: string): Promise<boolean> {
@@ -19,7 +12,7 @@ class FollowService {
             const newFollow = new Follow(follow);
             newFollow.save();
             return true;
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             return false;
         }
@@ -37,7 +30,7 @@ class FollowService {
                 return false;
             }
             return true;
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             return false;
         }
@@ -48,27 +41,27 @@ class FollowService {
             const deleteFollow = await Follow.findOneAndDelete({ user: user, followed: userFollowed }, { new: true });
             if (!deleteFollow) return false;
             return true;
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             return false;
         }
     }
-    
+
     public async getUserFollows(options: PaginationOptions) {
         try {
             const userFollows = await Follow.paginate(options);
             return userFollows;
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             return false;
         }
-    } 
+    }
 
     public async getUserFollowers(options: PaginationOptions) {
         try {
             const followers = await Follow.paginate(options);
             return followers;
-        } catch(e) {
+        } catch (e) {
             console.error(e);
             return false;
         }

@@ -25,6 +25,8 @@ export let fakeUserPayload = {
     created_at: new Date(),
 };
 
+export let id = "";
+
 
 describe('User routes API', () => {
     beforeAll(async () => {
@@ -66,6 +68,7 @@ describe('User routes API', () => {
         const decodedPayload = jwt.decode(token, secret, false, 'HS256');
 
         fakeUserPayload._id = decodedPayload.id || decodedPayload._id;
+        id = decodedPayload.id || decodedPayload._id;
     });
 
     // TEST UPDATE USERS DATA ROUTE
