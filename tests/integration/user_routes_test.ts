@@ -25,6 +25,7 @@ export let fakeUserPayload = {
     created_at: new Date(),
 };
 
+
 describe('User routes API', () => {
     beforeAll(async () => {
         await connection(); // conectas a la BBDD antes de los tests
