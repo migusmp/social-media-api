@@ -5,7 +5,7 @@ import { createToken, registerAndLoginAndReturnId } from '../test_utils/utils';
 import app from '../../src';
 import { fakeUserPayload } from './user_routes_test';
 
-describe('Posts routes API', () => {
+describe('Follows routes API', () => {
     beforeAll(async () => {
         await connection(); // conectas a la BBDD antes de los tests
     });
