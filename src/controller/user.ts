@@ -14,66 +14,65 @@ interface Request extends ExpressRequest {
 class UserController {
 
     static async register(req: Request, res: Response): Promise<object> {
-
         const { name, nick, email, password }: RegisterInfo = req.body;
-        // Nos aseguramos de que el usuario envía todos los datos
+        // Ensure the user sends all required data
         if (!name || !nick || !email || !password) {
-            return errorResponse(res, HttpStatusCodes.NOT_FOUND, "Falta información para registrar al usuario")
+            return errorResponse(res, HttpStatusCodes.NOT_FOUND, "Missing information to register the user");
         }
 
-        const checkData = await UserService.verifyRegisterData(name, nick, email, password); // Verificamos la información proporcionada por el usuario
+        const checkData = await UserService.verifyRegisterData(name, nick, email, password); // Verify the information provided by the user
         if (checkData != true) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, checkData);
 
-        // Verificamos que el usuario ya exista en la BBDD
+        // Check if the user already exists in the DB
         const checkUser = await UserService.checkIfUserExist(nick, email);
-        if (checkUser) return errorResponse(res, HttpStatusCodes.SERVICE_UNAVAILABLE, "Este usuario ya existe!");
+        if (checkUser) return errorResponse(res, HttpStatusCodes.SERVICE_UNAVAILABLE, "This user already exists!");
         try {
             const userInfo: RegisterInfo = { name, nick, email, password }
-            // Hasheamos la contraseña
+            // Hash the password
             const hashedPwd = await UserService.hashPassword(password);
-            if (!hashedPwd) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error hashear la password");
+            if (!hashedPwd) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error hashing the password");
 
             userInfo.password = hashedPwd;
 
-            // Guardamos al usuario en la base de datos
+            // Save the user in the database
             const userSaved = await UserService.saveUser(userInfo);
-            if (!userSaved) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al registrar al usuario")
+            if (!userSaved) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error registering the user")
 
-            return successResponse(res, HttpStatusCodes.CREATED, "Usuario registrado correctamente");
-        } catch(e) {
+            return successResponse(res, HttpStatusCodes.OK, "Successfully registered user");
+        } catch (e) {
             console.error(e);
-            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al registrar el usuario :(")
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error registering the user :(")
         }
     }
 
     static async login(req: Request, res: Response): Promise<object> {
         const { nick, password } = req.body;
-        if (!nick || !password) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Faltan datos por enviar");
+        if (!nick || !password) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Missing data to send");
 
         try {
-            // Verificar que el usuario existe
+            // Verify that the user exists
             const userExist = await UserService.findUserByNick(nick);
-            if (!userExist) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "El usuario no existe");
+            if (!userExist) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "The user does not exist");
 
-            // Comprobar contraseña
+            // Check password
             const verifyPwd = await UserService.verifyPassword(password, userExist.password);
-            if (!verifyPwd) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Contraseña incorrecta");
+            if (!verifyPwd) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Incorrect password");
 
-            // Crear el token
+            // Create the token
             const token = await UserService.generateToken(userExist as UserPayload);
-            if (!token) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Ups ha ocurrido un error al intentar iniciar sesión :(");
+            if (!token) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Oops, an error occurred while trying to log in :(");
 
-            // Ponemos en la cookie el token que contiene la información del usuario logueado
+            // Set the cookie with the token containing the logged-in user's information
             res.cookie('auth', token, {
-                httpOnly: true, // Esta cookie solo será accesible por el servidor
-                sameSite: 'strict', // Limita el envío de la cookie en solicitudes de terceros
-                maxAge: 24 * 60 * 60 * 1000 // La cookie expira en 1 día
+                httpOnly: true, // This cookie will only be accessible by the server
+                sameSite: 'strict', // Limits cookie sending on third-party requests
+                maxAge: 24 * 60 * 60 * 1000 // Cookie expires in 1 day
             });
 
-            return successResponse(res, HttpStatusCodes.OK, "Usuario logueado correctamente!", token);
-        } catch(e) {
+            return successResponse(res, HttpStatusCodes.OK, "User successfully logged in!", token);
+        } catch (e) {
             console.error(e);
-            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al intentar iniciar sesión");
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error trying to log in");
         }
     }
 
@@ -88,64 +87,64 @@ class UserController {
         }
 
         try {
-            // Comprobamos que si quiere actualizar el nick, este no lo tenga ya asignado un usuario.
+            // Check if the user wants to update the nick, and if it's already assigned to another user.
             if (info.nick) {
                 const checkNewNick = await UserService.findUserByNick(info.nick);
-        
+
                 if (checkNewNick != false) {
-                    return errorResponse(res, HttpStatusCodes.OK, "this nick is already used");
+                    return errorResponse(res, HttpStatusCodes.OK, "This nick is already used");
                 }
             }
 
             if (info.password) {
                 const newPassword = await UserService.hashPassword(info.password);
-                if (!newPassword) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al realizar la operación");
+                if (!newPassword) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error performing the operation");
                 info.password = newPassword;
             }
 
             const update = await UserService.updateUser(user?.id, info);
             if (!update) {
-                return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar la información del usuario");
+                return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error updating the user's information");
             }
-            
+
             return successResponse(res, HttpStatusCodes.OK, "User updated!");
 
-        } catch(e) {
+        } catch (e) {
             console.error(e);
-            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar el usuario, INTERNAL SERVER ERROR");
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error updating the user, INTERNAL SERVER ERROR");
         }
     }
 
     static async upload(req: Request, res: Response): Promise<object | void> {
         const user = req.user;
-        if (!user) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "user identity err");
+        if (!user) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "User identity error");
         if (!req.file) {
-            return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "You need introduce an image");
+            return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "You need to upload an image");
         }
-        // Obtenemos la extensión del archivo subido por el cliente
+        // Get the file extension of the image uploaded by the client
         let image = req.file.originalname;
         let imageSplit = image.split("\.");
         let imageExtension = imageSplit[1];
 
         if (imageExtension !== "jpeg" && imageExtension !== "jpg" && imageExtension !== "png" && imageExtension !== "gif") {
-            // Eliminamos la imágen
+            // Delete the image
             let imagePath = req.file.path;
             fs.unlinkSync(imagePath);
 
             return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Invalid image format");
         }
 
-        let userImageUpdate = await UserService.updateUserImage(user.id, req.file.filename); // Actualizamos la imagen en la BBDD
+        let userImageUpdate = await UserService.updateUserImage(user.id, req.file.filename); // Update the image in the DB
 
         if (!userImageUpdate) {
-            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al actualizar la imagen de perfil");
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error updating the profile image");
         }
 
         return successResponse(res, HttpStatusCodes.OK, "Image", userImageUpdate);
     }
 
     static async usersList(req: Request, res: Response): Promise<object> {
-        // Página que se mostrará por defecto
+        // Default page to show
         let page: number = 1;
 
         if (req.params.page) {
@@ -157,18 +156,18 @@ class UserController {
                 limit: 2,
                 select: "nick name _id"
             }
-            const users = await UserService.usersList(options); // Listamos los usuarios
+            const users = await UserService.usersList(options); // List users
             return successResponse(res, HttpStatusCodes.OK, "App users list:", users);
-        } catch(e) {
+        } catch (e) {
             console.error(e);
-            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los usuarios de la App, INTERNAL SERVER ERROR");
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error getting app users, INTERNAL SERVER ERROR");
         }
     }
 
     static async follows(req: Request, res: Response) {
         const { id } = req.params;
-        if (!id) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Debes de introducir el id del usuario para saber a quien sigue!");
-        
+        if (!id) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "You must provide the user id to know who they follow!");
+
         let page: number = 1;
         let limit = 2;
         if (req.params.page) {
@@ -190,29 +189,29 @@ class UserController {
 
             let followsArr: object[] = [];
             let follows = await FollowService.getUserFollows(options);
-            if (!follows) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los follows del usuario");
+            if (!follows) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error getting user's follows");
 
             follows.docs.map(follow => {
                 followsArr.push(follow.followed);
             })
 
             return successResponse(res, HttpStatusCodes.OK, "Follows:", followsArr);
-        } catch(e) {
+        } catch (e) {
             console.error(e);
-            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los follows del usuario!, INTERNAL SERVER ERROR");
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error getting user's follows!, INTERNAL SERVER ERROR");
         }
     }
 
     static async followers(req: Request, res: Response) {
         const { id } = req.params;
-        if (!id) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Debes de introducir el id del usuario para saber a quien le sigue!");
+        if (!id) return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "You must provide the user id to know who follows them!");
 
         let page: number = 1;
         let limit = 4;
         if (req.params.page) {
             page = parseInt(req.params.page);
         }
-        
+
         try {
             const options = {
                 query: { followed: id },
@@ -226,12 +225,12 @@ class UserController {
             }
 
             const followers = await FollowService.getUserFollowers(options);
-            if (!followers) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los followers del usuario");
+            if (!followers) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error getting user's followers");
 
-            return  successResponse(res, HttpStatusCodes.OK, "Followers:", followers.docs);
-        } catch(e) {
+            return successResponse(res, HttpStatusCodes.OK, "Followers:", followers.docs);
+        } catch (e) {
             console.error(e);
-            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error al obtener los followers del usuario, INTERNAL SERVER ERROR");
+            return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error getting user's followers, INTERNAL SERVER ERROR");
         }
 
     }

@@ -1,2 +1,8 @@
+# Node modules
+node_modules/
+
+# Environment files
 .env
-node_modules
+
+# Uploaded user files
+src/uploads/user/

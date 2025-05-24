@@ -4,9 +4,9 @@ const db_url = process.env.DATABASE_URL;
 
 const connection = async () => {
     try {
-        await mongoose.connect(`mongodb://${db_url}`)
+        await mongoose.connect(`${db_url}`)
         console.log("CONEXIÓN A LA BASE DE DATOS EXITOSA!");
-    } catch(e) {
+    } catch (e) {
         console.error("Error al establecer conexión con la BBDD:", e);
     }
 }

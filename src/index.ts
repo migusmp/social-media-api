@@ -9,7 +9,7 @@ import connection from './db/connection';
 // Importamos el router de la API
 import MainRouter from './routes/index';
 
-connection(); // Establecemos conexión con la BBDD
+// connection(); // Establecemos conexión con la BBDD
 
 const app = express() // Inicializamos la app
 
@@ -23,9 +23,8 @@ app.use(cookieParser());
 app.use("/api", MainRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
+if (process.env.NODE_ENV !== 'test') {
+    connection();
+}
 
-const PORT = process.env.PORT || 8080;
-
-app.listen(PORT, () => {
-    console.log(`App listen on http://localhost:${PORT}`)
-})
+export default app;
