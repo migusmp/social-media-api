@@ -10,7 +10,7 @@ class FollowService {
             }
 
             const newFollow = new Follow(follow);
-            newFollow.save();
+            await newFollow.save();
             return true;
         } catch (e) {
             console.error(e);
