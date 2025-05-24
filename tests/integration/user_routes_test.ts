@@ -1,62 +1,35 @@
 import request from 'supertest';
 import app from '../../src/index';
 import mongoose, { Types } from 'mongoose';
-import connection from '../../src/db/connection'; // o donde tengas el connection
+import connection from '../../src/db/connection';
 import jwt from 'jwt-simple'
-import moment from 'moment';
-import { UserPayload } from '../../src/utils/types';
-const secret = process.env.SECRET_PAYLOAD_KEY;
+import { createToken, randomString } from '../test_utils/utils';
 
-function randomString(length: number): string {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-}
+const randomUser = {
+    name: 'name' + randomString(5),
+    nick: 'nick' + randomString(5),
+    email: randomString(5) + '@example.com',
+    password: 1234,
+};
 
-function createToken(user: UserPayload): string {
-    const payload = {
-        id: user._id,
-        name: user.name,
-        nick: user.nick,
-        email: user.email,
-        description: user.description,
-        password: user.password,
-        image: user.image,
-        created_at: user.created_at,
-        iat: moment().unix(),
-        exp: moment().add(30, "days").unix()
-    };
-
-    return jwt.encode(payload, secret!, 'HS256');
-}
+export let fakeUserPayload = {
+    _id: new Types.ObjectId().toString(),
+    name: randomUser.name,
+    nick: randomUser.nick,
+    email: randomUser.email,
+    password: "1234",
+    description: "User for testing",
+    followers: [new Types.ObjectId(), new Types.ObjectId()],
+    following: [new Types.ObjectId()],
+    image: "default.png",
+    created_at: new Date(),
+};
 
 describe('User routes API', () => {
     beforeAll(async () => {
         await connection(); // conectas a la BBDD antes de los tests
     });
 
-    const randomUser = {
-        name: 'name' + randomString(5),
-        nick: 'nick' + randomString(5),
-        email: randomString(5) + '@example.com',
-        password: 1234,
-    };
-
-    let fakeUserPayload = {
-        _id: new Types.ObjectId().toString(),
-        name: randomUser.name,
-        nick: randomUser.nick,
-        email: randomUser.email,
-        password: "1234",
-        description: "User for testing",
-        followers: [new Types.ObjectId(), new Types.ObjectId()],
-        following: [new Types.ObjectId()],
-        image: "default.png",
-        created_at: new Date(),
-    };
 
     // TEST REGISTER USERS ROUTE
     it('POST /api/user/register You must register a user with urlencoded data', async () => {
