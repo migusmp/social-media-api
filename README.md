@@ -1,24 +1,23 @@
 # Social Media API
 
-Una API RESTful desarrollada con Node.js, Express y MongoDB, que proporciona funcionalidades básicas para una red social: registro y autenticación de usuarios, creación de publicaciones, subida de imágenes, comentarios, likes y más.
+A RESTful API built with Node.js, Express, and MongoDB that provides core social media features: user registration and authentication, post creation, image uploads, comments, likes, and more.
 
-## 📚 Documentación
+## 📚 Documentation
 
-Puedes consultar la documentación completa del proyecto aquí:  
-👉 [Ver documentación](https://migus.dev/docs/social-media-api/)
+You can check out the full project documentation here:  
+👉 [View Documentation](https://migus.dev/docs/social-media-api/)
 
-## Características principales
+## 🔑 Key Features
 
-- Autenticación mediante JWT
-- Encriptación segura de contraseñas con bcrypt
-- Paginación en resultados usando `mongoose-paginate-ts`
-- Soporte para CORS
-- Subida de imágenes con `multer`
-- Gestión de usuarios y publicaciones
-- Compatible con SQLite (para pruebas) y MongoDB
-- Entorno configurable con `.env`
+- JWT-based user authentication
+- Secure password hashing with bcrypt
+- Pagination support using `mongoose-paginate-ts`
+- CORS enabled
+- File upload handling with `multer`
+- User and post management
+- SQLite support for testing and MongoDB for production
+- Environment variable support via `.env`
 
 ---
 
-**Tecnologías:** Node.js · Express · MongoDB · Mongoose · TypeScript · JWT · Multer · SQLite
-
+**Tech Stack:** Node.js · Express · MongoDB · Mongoose · TypeScript · JWT · Multer · SQLite
