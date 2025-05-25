@@ -1,2 +1,2 @@
-start cmd.exe /k "cd C:\Program Files\MongoDB\Server\7.0\bin && mongod.exe"
-start cmd.exe /k "cd C:\Users\Mmp20\workspace\social-media-api && npm start"
+start cmd.exe /k "cd C:\Program Files\MongoDB\Server\____\bin && mongod.exe"
+start cmd.exe /k "cd C:\Users\____\workspace\social-media-api && npm start"

@@ -16,7 +16,7 @@ export type CreatePublication = {
 
 class PostController {
     static async create(req: Request, res: Response) {
-        const userIdentity = req.user; // Check who is trying to create a post
+        const userIdentity = req.user;
         const { text } = req.body;
         if (!text || !userIdentity) { // Make sure the user provides the post text
             return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "Text is required");
@@ -41,7 +41,7 @@ class PostController {
 
     static async delete(req: Request, res: Response) {
         const userIdentity = req.user;
-        const { postId } = req.body;
+        const { postId } = req.params;
         if (!userIdentity || !postId) {
             return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "You must provide the post ID to delete it");
         }
@@ -67,7 +67,8 @@ class PostController {
 
     static async update(req: Request, res: Response) {
         const userIdentity = req.user;
-        const { postId, text } = req.body;
+        const { postId } = req.params;
+        const { text } = req.body;
         if (!postId || !userIdentity) {
             return errorResponse(res, HttpStatusCodes.BAD_REQUEST, "You must provide the post ID");
         }

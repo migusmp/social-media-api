@@ -31,10 +31,10 @@ describe('Posts routes API', () => {
 
     it("PUT /api/post/update  |  Test to update post", async () => {
         const res = await request(app)
-            .put('/api/post/update')
+            .put(`/api/post/update/${postCreatedId}`)
             .set('Cookie', [`auth=${token}`])
             .type('form')
-            .send({ postId: postCreatedId, text: "new text to update post" + randomString(4) });
+            .send({ text: "new text to update post" + randomString(4) });
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('status', 'success');
@@ -42,10 +42,8 @@ describe('Posts routes API', () => {
 
     it("DELETE /api/post/delete  |  Test to delete post", async () => {
         const res = await request(app)
-            .delete('/api/post/delete')
+            .delete(`/api/post/delete/${postCreatedId}`)
             .set('Cookie', [`auth=${token}`])
-            .type('form')
-            .send({ postId: postCreatedId });
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('status', 'success');

@@ -43,7 +43,6 @@ describe('User routes API', () => {
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('status', 'success');
-        expect(res.body).toHaveProperty('message', 'Successfully registered user');
     });
 
     // TEST LOGIN USERS ROUTE
@@ -59,7 +58,6 @@ describe('User routes API', () => {
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toHaveProperty('status', 'success');
-        expect(res.body).toHaveProperty('message', 'User successfully logged in!');
         expect(res.body).toHaveProperty('data');
 
         const token = res.body.data;

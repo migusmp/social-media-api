@@ -6,7 +6,7 @@ import PostRouter from './post';
 const router = Router();
 
 router.use('/user', UsersRouter);
-router.use('/follows', FollowsRouter);
 router.use('/post', PostRouter);
+router.use('/follows', FollowsRouter);
 
 export default router;

@@ -38,7 +38,7 @@ class UserController {
             const userSaved = await UserService.saveUser(userInfo);
             if (!userSaved) return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error registering the user")
 
-            return successResponse(res, HttpStatusCodes.OK, "Successfully registered user");
+            return successResponse(res, HttpStatusCodes.OK, "User registered successfully");
         } catch (e) {
             console.error(e);
             return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error registering the user :(")
@@ -69,7 +69,7 @@ class UserController {
                 maxAge: 24 * 60 * 60 * 1000 // Cookie expires in 1 day
             });
 
-            return successResponse(res, HttpStatusCodes.OK, "User successfully logged in!", token);
+            return successResponse(res, HttpStatusCodes.OK, "User successfully login", token);
         } catch (e) {
             console.error(e);
             return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error trying to log in");
@@ -107,7 +107,7 @@ class UserController {
                 return errorResponse(res, HttpStatusCodes.INTERNAL_SERVER_ERROR, "Error updating the user's information");
             }
 
-            return successResponse(res, HttpStatusCodes.OK, "User updated!");
+            return successResponse(res, HttpStatusCodes.OK, "User updated");
 
         } catch (e) {
             console.error(e);

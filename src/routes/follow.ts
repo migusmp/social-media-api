@@ -4,7 +4,7 @@ import FollowsController from '../controller/follow';
 
 const router = Router();
 
-router.post("/follow/:userFollowdId", check.auth, FollowsController.follow);
-router.delete("/unfollow/:userUnfollowed", check.auth, FollowsController.unfollow);
+router.post("/follow/:userId", check.auth, FollowsController.follow);
+router.delete("/unfollow/:userId", check.auth, FollowsController.unfollow);
 
 export default router;
