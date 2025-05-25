@@ -1,6 +1,6 @@
 # Social Media API
 
-A RESTful API built with Node.js, Express, and MongoDB that provides core social media features: user registration and authentication, post creation, image uploads, comments, likes, and more.
+A RESTful API built with Node.js, Express, and MongoDB that provides core social media features: user registration and authentication, post creation and image uploads.
 
 ## 📚 Documentation
 
@@ -20,4 +20,4 @@ You can check out the full project documentation here:
 
 ---
 
-**Tech Stack:** Node.js · Express · MongoDB · Mongoose · TypeScript · JWT · Multer · SQLite
+**Tech Stack:** Node.js · Express · MongoDB · Mongoose · TypeScript · JWT · Multer
